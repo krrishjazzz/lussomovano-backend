@@ -1,11 +1,7 @@
 package com.lussomovano.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-import jakarta.persistence.Id;
 
 
 @Entity
@@ -24,8 +20,8 @@ public class Product {
     private String imageUrl;
     private String category;
     private int stockQuantity;
-    private String collectionName;
-
+    @Column(name = "collection")
+    private String collection;
 
 
     public boolean isOutOfStock() {
