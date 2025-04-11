@@ -38,6 +38,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'com.razorpay:razorpay-java:1.4.0'
+	implementation 'com.cloudinary:cloudinary-http44:1.29.0'
+
 }
 
 tasks.named('test') {

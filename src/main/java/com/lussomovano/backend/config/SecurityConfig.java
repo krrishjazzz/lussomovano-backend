@@ -1,9 +1,12 @@
 package com.lussomovano.backend.config;
 
+import com.lussomovano.backend.controller.ProductController;
 import com.lussomovano.backend.security.JwtFilter;
 import com.lussomovano.backend.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
     @Autowired
     private JwtFilter jwtFilter;
 
@@ -22,20 +27,36 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/products/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .userDetailsService(customUserDetailsService)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+        try {
+            logger.info("Initializing Security Filter Chain");
+
+            return http
+                    .csrf(csrf -> csrf.disable())
+                    .authorizeHttpRequests(auth -> {
+                        auth.requestMatchers("/api/auth/**", "/api/products/**").permitAll();
+                        auth.anyRequest().authenticated();
+                        logger.debug("Configured authorization rules");
+                    })
+                    .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .userDetailsService(customUserDetailsService)
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    .build();
+
+        } catch (Exception ex) {
+            logger.error("Error configuring Security Filter Chain", ex);
+            throw new RuntimeException("Failed to initialize security configuration", ex);
+        }
     }
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+        try {
+            logger.info("Creating AuthenticationManager bean");
+            return config.getAuthenticationManager();
+        } catch (Exception ex) {
+            logger.error("Error creating AuthenticationManager", ex);
+            throw new RuntimeException("Failed to create AuthenticationManager", ex);
+        }
     }
 }
 

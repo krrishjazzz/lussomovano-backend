@@ -27,5 +27,11 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "razorpay_order_id")
+    private String razorpayOrderId;
+
+    @Column(name = "payment_id")
+    private String razorpayPaymentId;
 }
 
